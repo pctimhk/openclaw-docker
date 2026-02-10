@@ -1,0 +1,32 @@
+# Assets (game files from original game)
+assets/*
+!assets/.gitkeep
+
+# Config files
+config/*
+!config/.gitkeep
+
+# Save games
+saves/*
+!saves/.gitkeep
+
+# Docker volumes
+*.log
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dll
+*.exe
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

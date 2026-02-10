@@ -1,0 +1,76 @@
+# OpenClaw Docker with VNC support for Synology
+# This version includes VNC server for GUI access
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    DISPLAY=:0 \
+    OPENCLAW_VERSION=master \
+    VNC_PORT=5900 \
+    NOVNC_PORT=6080 \
+    VNC_RESOLUTION=1024x768 \
+    VNC_DEPTH=24
+
+# Install dependencies including VNC
+RUN apt-get update && apt-get install -y \
+    git \
+    cmake \
+    build-essential \
+    libsdl2-dev \
+    libsdl2-mixer-dev \
+    libsdl2-image-dev \
+    libsdl2-ttf-dev \
+    zlib1g-dev \
+    libtinyxml-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    libboost-all-dev \
+    tigervnc-standalone-server \
+    tigervnc-common \
+    xfce4 \
+    xfce4-terminal \
+    supervisor \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install noVNC for web-based VNC access
+RUN mkdir -p /opt/novnc/utils/websockify && \
+    wget -qO- https://github.com/novnc/noVNC/archive/v1.4.0.tar.gz | tar xz --strip 1 -C /opt/novnc && \
+    wget -qO- https://github.com/novnc/websockify/archive/v0.11.0.tar.gz | tar xz --strip 1 -C /opt/novnc/utils/websockify && \
+    ln -s /opt/novnc/vnc.html /opt/novnc/index.html
+
+# Create working directory
+WORKDIR /openclaw
+
+# Clone OpenClaw repository
+RUN git clone https://github.com/pjasicek/OpenClaw.git /openclaw-src
+
+# Build OpenClaw
+WORKDIR /openclaw-src/Build_Release
+RUN cmake -DCMAKE_BUILD_TYPE=Release .. && \
+    make -j$(nproc) && \
+    cp openclaw /openclaw/ && \
+    cp -r ../Build_Release/Release/* /openclaw/ || true
+
+# Copy assets directory structure
+RUN mkdir -p /openclaw/ASSETS
+
+# Set working directory
+WORKDIR /openclaw
+
+# Create a volume for game assets
+VOLUME ["/openclaw/ASSETS"]
+
+# Create VNC directory
+RUN mkdir -p ~/.vnc
+
+# Copy configuration files
+COPY entrypoint-vnc.sh /entrypoint.sh
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN chmod +x /entrypoint.sh
+
+# Expose VNC and noVNC ports
+EXPOSE 5900 6080
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

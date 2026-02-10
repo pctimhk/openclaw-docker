@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- Sample OpenClaw configuration file -->
+<!-- Place this in the config directory if you want to customize settings -->
+<Config>
+    <!-- Display settings -->
+    <Display>
+        <Resolution width="800" height="600" />
+        <Fullscreen>false</Fullscreen>
+        <VSync>true</VSync>
+        <Scale>2</Scale>
+    </Display>
+    
+    <!-- Audio settings -->
+    <Audio>
+        <MusicVolume>80</MusicVolume>
+        <SoundVolume>80</SoundVolume>
+        <Enabled>true</Enabled>
+    </Audio>
+    
+    <!-- Game settings -->
+    <Game>
+        <Difficulty>Normal</Difficulty>
+        <ShowFPS>false</ShowFPS>
+    </Game>
+    
+    <!-- Asset paths -->
+    <Assets>
+        <RezFile>ASSETS/CLAW.REZ</RezFile>
+    </Assets>
+</Config>
