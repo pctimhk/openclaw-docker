@@ -17,7 +17,8 @@ connect_surfshark() {
     
     # Default to US server if country not specified
     COUNTRY="${SURFSHARK_COUNTRY:-us}"
-    echo "Connecting to Surfshark VPN server: $COUNTRY"
+    SERVER_HOSTNAME="${COUNTRY}-prod.prod.surfshark.com"
+    echo "Connecting to Surfshark VPN server: $COUNTRY ($SERVER_HOSTNAME)"
     
     # Create auth file for OpenVPN
     echo "$SURFSHARK_USER" > /tmp/surfshark-auth.txt
@@ -30,19 +31,25 @@ connect_surfshark() {
         mkdir -p /etc/openvpn
         
         # Surfshark uses standard OpenVPN configs available from their site
-        # Try to download the config file
-        wget -q -O "/etc/openvpn/surfshark-${COUNTRY}.ovpn" \
-            "https://api.surfshark.com/v1/server/configurations/${COUNTRY}-prod.prod.surfshark.com_udp.ovpn" \
-            || wget -q -O "/etc/openvpn/surfshark-${COUNTRY}.ovpn" \
-            "https://my.surfshark.com/vpn/api/v1/server/configurations/${COUNTRY}-prod.prod.surfshark.com_udp.ovpn" \
-            || {
-                echo "WARNING: Could not download Surfshark config. Using manual configuration..."
-                # Create a basic OpenVPN config as fallback
-                cat > "/etc/openvpn/surfshark-${COUNTRY}.ovpn" <<EOF
+        # Try to download the config file from multiple sources
+        API_URL_1="https://api.surfshark.com/v1/server/configurations/${SERVER_HOSTNAME}_udp.ovpn"
+        API_URL_2="https://my.surfshark.com/vpn/api/v1/server/configurations/${SERVER_HOSTNAME}_udp.ovpn"
+        
+        if wget -q -O "/etc/openvpn/surfshark-${COUNTRY}.ovpn" "$API_URL_1"; then
+            echo "Successfully downloaded configuration from primary API"
+        elif wget -q -O "/etc/openvpn/surfshark-${COUNTRY}.ovpn" "$API_URL_2"; then
+            echo "Successfully downloaded configuration from secondary API"
+        else
+            echo "WARNING: Could not download Surfshark config from:"
+            echo "  - $API_URL_1"
+            echo "  - $API_URL_2"
+            echo "Creating fallback OpenVPN configuration..."
+            # Create a basic OpenVPN config as fallback
+            cat > "/etc/openvpn/surfshark-${COUNTRY}.ovpn" <<EOF
 client
 dev tun
 proto udp
-remote ${COUNTRY}-prod.prod.surfshark.com 1194
+remote $SERVER_HOSTNAME 1194
 resolv-retry infinite
 remote-random
 nobind
@@ -56,7 +63,7 @@ ping-restart 0
 ping-timer-rem
 reneg-sec 0
 comp-lzo no
-verify-x509-name ${COUNTRY}-prod.prod.surfshark.com name
+verify-x509-name $SERVER_HOSTNAME name
 remote-cert-tls server
 
 auth-user-pass /tmp/surfshark-auth.txt
@@ -66,7 +73,7 @@ fast-io
 cipher AES-256-CBC
 auth SHA512
 EOF
-            }
+        fi
     fi
     
     # Start OpenVPN in the background
@@ -88,8 +95,13 @@ EOF
             
             # Show the external IP for verification
             sleep 2
-            EXTERNAL_IP=$(wget -qO- https://api.ipify.org || echo "unknown")
-            echo "External IP: $EXTERNAL_IP"
+            echo "Verifying external IP address..."
+            if EXTERNAL_IP=$(wget -qO- --timeout=5 https://api.ipify.org 2>/dev/null); then
+                echo "External IP: $EXTERNAL_IP"
+            else
+                echo "VPN connected but could not verify external IP (network check failed)"
+                echo "This is normal if internet connectivity is limited during startup"
+            fi
             
             return 0
         fi
