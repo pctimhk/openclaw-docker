@@ -5,6 +5,7 @@ Run [OpenClaw](https://github.com/OpenClaw/OpenClaw), a personal AI assistant, o
 ## Features
 
 - 🐳 Optimized Docker image based on Alpine Linux (small footprint)
+- 🔒 Built-in Surfshark VPN support for secure connections
 - 🔄 Automatic restart on failure
 - 💾 Persistent data storage with volume mappings
 - ⚙️ Easy configuration through environment variables
@@ -94,6 +95,10 @@ Key environment variables you can configure:
 | `LOG_LEVEL` | Log level (debug/info/warn/error) | `info` |
 | `ANTHROPIC_API_KEY` | Anthropic API key | - |
 | `OPENAI_API_KEY` | OpenAI API key | - |
+| `SURFSHARK_ENABLED` | Enable Surfshark VPN (true/false) | `false` |
+| `SURFSHARK_USER` | Surfshark username | - |
+| `SURFSHARK_PASSWORD` | Surfshark password | - |
+| `SURFSHARK_COUNTRY` | Surfshark server country code | `us` |
 
 ### Volume Mappings
 
@@ -103,6 +108,69 @@ Key environment variables you can configure:
 ### Port Mappings
 
 - `18789` - OpenClaw gateway (default)
+
+## Surfshark VPN Support
+
+This Docker container includes built-in support for Surfshark VPN, allowing OpenClaw to route all traffic through a secure VPN connection before starting. This is useful for privacy, security, or bypassing geographic restrictions.
+
+### Enabling Surfshark VPN
+
+1. **Get your Surfshark credentials**:
+   - Log in to your [Surfshark account](https://my.surfshark.com/)
+   - Go to "Manual Setup" or "VPN manual setup"
+   - Note your Service credentials (username and password)
+   - These are different from your regular Surfshark login credentials
+
+2. **Configure environment variables** in your `.env` file:
+   ```bash
+   # Enable Surfshark VPN
+   SURFSHARK_ENABLED=true
+   
+   # Add your Surfshark service credentials
+   SURFSHARK_USER=your_service_username
+   SURFSHARK_PASSWORD=your_service_password
+   
+   # Optional: Choose VPN server country (defaults to 'us')
+   SURFSHARK_COUNTRY=us
+   ```
+
+3. **Available country codes**: `us`, `uk`, `de`, `nl`, `fr`, `ca`, `au`, `jp`, `sg`, and many more. See [Surfshark server list](https://support.surfshark.com/hc/en-us/articles/360011051133) for all options.
+
+4. **Restart the container** to apply VPN settings:
+   ```bash
+   sudo docker-compose down
+   sudo docker-compose up -d
+   ```
+
+5. **Verify VPN connection**: Check the logs to see if VPN connected successfully:
+   ```bash
+   sudo docker-compose logs openclaw
+   ```
+   
+   You should see messages like:
+   ```
+   Surfshark VPN is enabled. Initializing VPN connection...
+   Connecting to Surfshark VPN server: us
+   VPN connection established successfully!
+   External IP: xxx.xxx.xxx.xxx
+   ```
+
+### Surfshark VPN Troubleshooting
+
+**VPN connection fails**:
+- Verify your Surfshark service credentials are correct (not your account login)
+- Check that your Surfshark subscription is active
+- Try a different country server using `SURFSHARK_COUNTRY`
+- Check container logs: `sudo docker-compose logs openclaw`
+
+**Container requires elevated privileges**:
+- The container needs `NET_ADMIN` and `NET_RAW` capabilities for VPN
+- These are already configured in `docker-compose.yml`
+- Synology users: Ensure Docker has necessary permissions
+
+**Disabling VPN**:
+- Set `SURFSHARK_ENABLED=false` in `.env` file
+- Restart the container
 
 ## Initial Setup
 
@@ -219,10 +287,12 @@ sudo docker-compose restart openclaw
 ## Security Considerations
 
 - Keep your API keys secure (use `.env` file, never commit to git)
+- Keep your Surfshark VPN credentials secure (never commit to git)
 - Restrict access to the gateway port (use Synology firewall)
 - Regularly update the OpenClaw image
 - Use strong passwords for any authentication
 - Consider using reverse proxy with SSL/TLS for external access
+- When using Surfshark VPN, all container traffic is routed through the VPN
 
 ## Additional Resources
 
