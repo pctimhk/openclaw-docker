@@ -1,0 +1,52 @@
+services:
+  openclaw:
+    build: .
+    image: openclaw:latest
+    container_name: openclaw-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      # Persistent data storage
+      - ./data/openclaw:/data/openclaw
+      - ./data/config:/data/config
+    environment:
+      # Node environment
+      - NODE_ENV=production
+      
+      # OpenClaw configuration paths
+      - OPENCLAW_HOME=/data/openclaw
+      - OPENCLAW_CONFIG=/data/config
+      
+      # Optional: Set timezone (adjust as needed)
+      - TZ=UTC
+      
+      # Optional: Set log level (debug, info, warn, error)
+      - LOG_LEVEL=info
+      
+      # Optional: API Keys (can be set via Synology environment variables)
+      # - ANTHROPIC_API_KEY=your_key_here
+      # - OPENAI_API_KEY=your_key_here
+    
+    # Optional: Memory limits (adjust based on Synology NAS resources)
+    mem_limit: 2g
+    mem_reservation: 512m
+    
+    # Optional: CPU limits
+    cpus: "2.0"
+    
+    # Network mode
+    network_mode: bridge
+    
+    # Labels for organization
+    labels:
+      - "com.synology.app=openclaw"
+      - "com.synology.description=OpenClaw Personal AI Assistant"
+      - "com.synology.maintainer=openclaw-docker"
+
+# Optional: Create named volumes for better management
+volumes:
+  openclaw_data:
+    driver: local
+  openclaw_config:
+    driver: local
