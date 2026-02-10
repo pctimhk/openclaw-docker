@@ -16,30 +16,30 @@ help:
 	@echo ""
 
 build:
-	docker-compose build
+	docker compose build
 
 up:
-	docker-compose up -d
+	docker compose up -d
 	@echo "OpenClaw container started!"
 	@echo "Remember to place CLAW.REZ in the assets directory"
 
 down:
-	docker-compose down
+	docker compose down
 
 logs:
-	docker-compose logs -f openclaw
+	docker compose logs -f openclaw
 
 restart:
-	docker-compose restart
+	docker compose restart
 
 status:
-	docker-compose ps
+	docker compose ps
 
 shell:
-	docker-compose exec openclaw /bin/bash
+	docker compose exec openclaw /bin/bash
 
 clean:
-	docker-compose down -v
+	docker compose down -v
 	docker rmi openclaw:latest
 
 setup-dirs:
