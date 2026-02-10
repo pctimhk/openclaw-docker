@@ -5,13 +5,17 @@ FROM node:22-alpine
 # Set working directory
 WORKDIR /app
 
-# Install necessary build dependencies and curl for health checks
+# Install necessary build dependencies, curl for health checks, and OpenVPN for Surfshark support
 RUN apk add --no-cache \
     python3 \
     make \
     g++ \
     git \
-    curl
+    curl \
+    openvpn \
+    wget \
+    iptables \
+    iproute2
 
 # Install OpenClaw globally
 RUN npm install -g openclaw@latest
@@ -27,6 +31,10 @@ ENV OPENCLAW_CONFIG=/data/config
 # Expose default gateway port
 EXPOSE 18789
 
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Volume for persistent data
 VOLUME ["/data/openclaw", "/data/config"]
 
@@ -34,6 +42,9 @@ VOLUME ["/data/openclaw", "/data/config"]
 # Note: Basic connectivity check to ensure gateway is responding
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:18789/ || exit 1
+
+# Set entrypoint to handle VPN connection
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Default command - run gateway
 CMD ["openclaw", "gateway", "--port", "18789", "--verbose"]

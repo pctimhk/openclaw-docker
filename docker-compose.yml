@@ -27,6 +27,12 @@ services:
       # Optional: API Keys (can be set via Synology environment variables)
       # - ANTHROPIC_API_KEY=your_key_here
       # - OPENAI_API_KEY=your_key_here
+      
+      # Surfshark VPN Configuration
+      - SURFSHARK_ENABLED=${SURFSHARK_ENABLED:-false}
+      - SURFSHARK_USER=${SURFSHARK_USER}
+      - SURFSHARK_PASSWORD=${SURFSHARK_PASSWORD}
+      - SURFSHARK_COUNTRY=${SURFSHARK_COUNTRY:-us}
     
     # Optional: Memory limits (adjust based on Synology NAS resources)
     mem_limit: 2g
@@ -34,6 +40,15 @@ services:
     
     # Optional: CPU limits
     cpus: "2.0"
+    
+    # Required capabilities for VPN support
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    
+    # Devices for VPN
+    devices:
+      - /dev/net/tun
     
     # Network mode
     network_mode: bridge
