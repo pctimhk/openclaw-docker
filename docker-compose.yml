@@ -1,0 +1,40 @@
+services:
+  openclaw:
+    image: openclaw:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw
+    restart: unless-stopped
+    
+    # For Synology, use host network for simplicity
+    # network_mode: bridge
+    
+    # Volume mounts for Synology
+    volumes:
+      # Mount your game assets here (CLAW.REZ file from original game)
+      - ./assets:/openclaw/ASSETS
+      # Mount config directory
+      - ./config:/openclaw/config
+      # Mount save games
+      - ./saves:/openclaw/saves
+    
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - TZ=${TZ:-UTC}
+    
+    # For X11 forwarding if needed
+    # devices:
+    #   - /dev/dri:/dev/dri
+    
+    # Uncomment if you need audio
+    # devices:
+    #   - /dev/snd:/dev/snd
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "test", "-f", "/openclaw/openclaw"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

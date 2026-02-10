@@ -1,0 +1,37 @@
+# Docker Compose override for Synology with VNC support
+# Rename this file to docker-compose.override.yml to use it
+
+services:
+  openclaw:
+    # Use a VNC-enabled base for GUI access on Synology
+    # This requires rebuilding with a VNC-capable base image
+    
+    ports:
+      # VNC port for remote desktop access
+      - "5900:5900"
+      # noVNC web interface (optional)
+      - "6080:6080"
+    
+    environment:
+      # VNC settings
+      - VNC_PASSWORD=openclaw
+      - VNC_RESOLUTION=1024x768
+      - VNC_DEPTH=24
+      
+      # Additional environment variables
+      - DISPLAY=:0
+      - TZ=UTC
+    
+    # Uncomment for hardware acceleration (if supported)
+    # devices:
+    #   - /dev/dri:/dev/dri
+    
+    # Resource limits (adjust based on your Synology model)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
