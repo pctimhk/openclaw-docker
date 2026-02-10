@@ -37,5 +37,5 @@ $DOCKER_COMPOSE up -d
 echo ""
 echo "OpenClaw is starting..."
 echo "To view logs: $DOCKER_COMPOSE logs -f openclaw"
-echo "To run onboarding: docker exec -it openclaw-gateway openclaw onboard"
+echo "To run onboarding: $DOCKER_COMPOSE exec openclaw openclaw onboard"
 echo "Gateway URL: http://localhost:18789"
