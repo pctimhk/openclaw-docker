@@ -1,7 +1,12 @@
 services:
   openclaw:
-    build: .
-    image: openclaw:latest
+    # Option 1: Use pre-built image from Docker Hub
+    image: pctimhk/openclaw-surfshark-synologydocker:latest
+    
+    # Option 2: Build locally (comment out the image line above and uncomment below)
+    # build: .
+    # image: openclaw:latest
+    
     container_name: openclaw-gateway
     restart: unless-stopped
     ports:
