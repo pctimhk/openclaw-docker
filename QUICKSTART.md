@@ -35,7 +35,29 @@ git clone https://github.com/pctimhk/openclaw-docker.git .
 - Download zip from GitHub
 - Upload to NAS via File Station
 
-### Step 4: Configure
+### Step 4: Optional - Configure VPN
+
+If you want to use Surfshark VPN (recommended for privacy):
+
+```bash
+# Get your service credentials from:
+# https://my.surfshark.com/vpn/manual-setup/main
+
+# Add to .env:
+nano .env
+```
+
+Add these lines:
+```env
+VPN_ENABLED=true
+SURFSHARK_USER=your_service_username
+SURFSHARK_PASSWORD=your_service_password
+SURFSHARK_COUNTRY=us
+```
+
+See [VPN_GUIDE.md](VPN_GUIDE.md) for detailed setup.
+
+### Step 5: Configure
 
 ```bash
 cp .env.example .env
@@ -50,7 +72,7 @@ OPENAI_API_KEY=sk-xxxxx
 
 Save: `Ctrl+X`, `Y`, `Enter`
 
-### Step 5: Build & Start
+### Step 6: Build & Start
 
 ```bash
 sudo ./build.sh
@@ -64,6 +86,16 @@ sudo docker exec -it openclaw-gateway openclaw onboard
 ```
 
 Follow the wizard!
+
+### Step 7: Verify VPN (if enabled)
+
+```bash
+# Check VPN status
+sudo docker logs openclaw-gateway | grep VPN
+
+# Check your IP address (should show VPN IP)
+sudo docker exec openclaw-gateway curl -s https://api.ipify.org
+```
 
 ## Access
 
