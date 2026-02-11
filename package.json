@@ -1,0 +1,10 @@
+{
+  "name": "openclaw-docker",
+  "version": "1.0.0",
+  "description": "OpenClaw Docker container with security patches",
+  "private": true,
+  "overrides": {
+    "tar": "^7.5.7",
+    "protobufjs": "^7.5.4"
+  }
+}
