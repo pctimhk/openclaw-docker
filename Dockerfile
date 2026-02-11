@@ -15,8 +15,11 @@ RUN apt-get update && apt-get install -y \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
-# Install OpenClaw globally
-RUN npm install -g openclaw@latest
+# Copy package.json with security overrides
+COPY package.json /app/package.json
+
+# Install OpenClaw locally with security overrides applied
+RUN npm install openclaw@latest
 
 # Create directories for persistent data
 RUN mkdir -p /data/openclaw /data/config
@@ -25,6 +28,7 @@ RUN mkdir -p /data/openclaw /data/config
 ENV NODE_ENV=production
 ENV OPENCLAW_HOME=/data/openclaw
 ENV OPENCLAW_CONFIG=/data/config
+ENV PATH="/app/node_modules/.bin:${PATH}"
 
 # Expose default gateway port
 EXPOSE 18789
