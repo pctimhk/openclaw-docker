@@ -1,5 +1,8 @@
 # OpenClaw Docker for Synology NAS
 
+[![Docker Publish](https://github.com/pctimhk/openclaw-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pctimhk/openclaw-docker/actions/workflows/docker-publish.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pctimhk/openclaw-surfshark-synologydocker?label=Docker%20Pulls)](https://hub.docker.com/r/pctimhk/openclaw-surfshark-synologydocker)
+
 Run [OpenClaw](https://github.com/OpenClaw/OpenClaw), a personal AI assistant, on your Synology NAS using Docker.
 
 ## Features
@@ -20,7 +23,37 @@ Run [OpenClaw](https://github.com/OpenClaw/OpenClaw), a personal AI assistant, o
 
 ## Quick Start on Synology
 
-### Option 1: Using Docker Compose (Recommended)
+### Option 1: Using Pre-built Docker Image (Easiest)
+
+1. **Open Docker package** on your Synology DSM
+
+2. **Download the image**:
+   ```bash
+   docker pull pctimhk/openclaw-surfshark-synologydocker:latest
+   ```
+
+3. **Create data directories**:
+   ```bash
+   mkdir -p /volume1/docker/openclaw/data/openclaw
+   mkdir -p /volume1/docker/openclaw/data/config
+   ```
+
+4. **Run the container**:
+   ```bash
+   docker run -d \
+     --name openclaw-gateway \
+     --restart unless-stopped \
+     -p 18789:18789 \
+     -v /volume1/docker/openclaw/data/openclaw:/data/openclaw \
+     -v /volume1/docker/openclaw/data/config:/data/config \
+     -e NODE_ENV=production \
+     -e TZ=UTC \
+     pctimhk/openclaw-surfshark-synologydocker:latest
+   ```
+
+5. **Access OpenClaw gateway** at `http://your-nas-ip:18789`
+
+### Option 2: Using Docker Compose (Recommended for Custom Builds)
 
 1. **Enable SSH** on your Synology NAS (Control Panel > Terminal & SNMP > Enable SSH service)
 
@@ -59,7 +92,7 @@ Run [OpenClaw](https://github.com/OpenClaw/OpenClaw), a personal AI assistant, o
 
 8. **Access OpenClaw gateway** at `http://your-nas-ip:18789`
 
-### Option 2: Using Synology Docker UI
+### Option 3: Using Synology Docker UI
 
 1. **Open Docker package** on your Synology DSM
 

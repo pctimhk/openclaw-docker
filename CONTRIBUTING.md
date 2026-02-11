@@ -194,6 +194,51 @@ Ideas for integration:
 - Follow security best practices
 - Report security issues privately
 
+## CI/CD and Automated Builds
+
+This repository uses GitHub Actions to automatically build and publish Docker images to Docker Hub.
+
+### Workflow Triggers
+
+The Docker image is automatically built and published when:
+- Code is pushed to the `main` or `master` branch
+- A tag matching `v*.*.*` is created (e.g., `v1.0.0`, `v2.1.3`)
+- Manual workflow dispatch is triggered
+
+### Required GitHub Secrets
+
+For maintainers with write access, the following secrets must be configured in the repository settings:
+
+1. **DOCKER_HUB_USERNAME**: Your Docker Hub username
+2. **DOCKER_HUB_TOKEN**: A Docker Hub access token (not your password)
+   - Create a token at: https://hub.docker.com/settings/security
+   - Recommended: Use a token with "Read, Write, Delete" permissions
+
+To add secrets:
+1. Go to Repository Settings → Secrets and variables → Actions
+2. Click "New repository secret"
+3. Add each secret with the exact names above
+
+### Docker Hub Repository
+
+Images are published to: `pctimhk/openclaw-surfshark-synologydocker`
+
+### Image Tags
+
+The workflow automatically creates the following tags:
+- `latest` - Latest build from the default branch
+- `v1.0.0` - Semantic version tags (when pushing version tags)
+- `v1.0` - Major.minor version tags
+- `v1` - Major version tags
+- `<branch>-<sha>` - Branch name with commit SHA (e.g., `main-abc123`, `master-abc123`)
+
+### Testing Workflow Changes
+
+Before submitting changes to the workflow:
+- Validate YAML syntax
+- Test Docker build locally: `docker build -t test:latest .`
+- Verify multi-platform builds work (if applicable)
+
 ## Getting Help
 
 Need help contributing?
