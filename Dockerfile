@@ -1,17 +1,19 @@
 # OpenClaw Docker Image for Synology
-# Based on Node.js 22 Alpine for smaller image size
-FROM node:22-alpine
+# Based on Node.js 22 Debian slim for compatibility with node-llama-cpp
+FROM node:22-slim
 
 # Set working directory
 WORKDIR /app
 
 # Install necessary build dependencies and curl for health checks
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     git \
-    curl
+    curl \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install OpenClaw globally
 RUN npm install -g openclaw@latest
