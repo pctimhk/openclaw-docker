@@ -230,7 +230,7 @@ The workflow automatically creates the following tags:
 - `v1.0.0` - Semantic version tags (when pushing version tags)
 - `v1.0` - Major.minor version tags
 - `v1` - Major version tags
-- `main-<sha>` - Branch name with commit SHA
+- `<branch>-<sha>` - Branch name with commit SHA (e.g., `main-abc123`, `master-abc123`)
 
 ### Testing Workflow Changes
 

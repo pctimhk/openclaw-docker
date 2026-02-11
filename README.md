@@ -1,7 +1,7 @@
 # OpenClaw Docker for Synology NAS
 
 [![Docker Publish](https://github.com/pctimhk/openclaw-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pctimhk/openclaw-docker/actions/workflows/docker-publish.yml)
-[![Docker Hub](https://img.shields.io/docker/v/pctimhk/openclaw-surfshark-synologydocker?label=Docker%20Hub)](https://hub.docker.com/r/pctimhk/openclaw-surfshark-synologydocker)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pctimhk/openclaw-surfshark-synologydocker?label=Docker%20Pulls)](https://hub.docker.com/r/pctimhk/openclaw-surfshark-synologydocker)
 
 Run [OpenClaw](https://github.com/OpenClaw/OpenClaw), a personal AI assistant, on your Synology NAS using Docker.
 
