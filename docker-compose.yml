@@ -4,6 +4,12 @@ services:
     image: openclaw:latest
     container_name: openclaw-gateway
     restart: unless-stopped
+    # Add capabilities needed for VPN
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    devices:
+      - /dev/net/tun
     ports:
       - "18789:18789"
     volumes:
@@ -27,6 +33,20 @@ services:
       # Optional: API Keys (can be set via Synology environment variables)
       # - ANTHROPIC_API_KEY=your_key_here
       # - OPENAI_API_KEY=your_key_here
+      
+      # VPN Configuration (Surfshark)
+      # Enable VPN by setting VPN_ENABLED to true
+      - VPN_ENABLED=false
+      # VPN type: openvpn or wireguard
+      - VPN_TYPE=openvpn
+      # Surfshark service credentials (not your account login!)
+      # Get these from: https://my.surfshark.com/vpn/manual-setup/main
+      # - SURFSHARK_USER=your_service_username
+      # - SURFSHARK_PASSWORD=your_service_password
+      # Surfshark country code (e.g., us, uk, de, jp)
+      # - SURFSHARK_COUNTRY=us
+      # Require VPN to be connected (fail if VPN fails)
+      - VPN_REQUIRED=false
     
     # Optional: Memory limits (adjust based on Synology NAS resources)
     mem_limit: 2g

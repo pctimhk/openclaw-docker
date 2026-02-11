@@ -225,6 +225,40 @@ If you've tried everything on this checklist:
 | `health check failed` | Gateway not starting | Check logs with `docker logs openclaw-gateway` |
 | `API key invalid` | Wrong or expired key | Update .env and restart |
 | `network timeout` | Internet/firewall issue | Check connectivity and firewall |
+| `VPN connection failed` | Invalid VPN credentials or network issue | Check service credentials and logs |
+| `Cannot open TUN/TAP` | Missing NET_ADMIN capability | Add cap_add and devices in docker-compose.yml |
+
+## VPN Issues
+
+### VPN Connection Fails
+
+- [ ] Verify VPN is enabled: `VPN_ENABLED=true` in .env
+- [ ] Check Surfshark credentials are service credentials (not account login)
+- [ ] Get credentials from: https://my.surfshark.com/vpn/manual-setup/main
+- [ ] Verify country code is valid (e.g., us, uk, de)
+- [ ] Check logs: `sudo docker logs openclaw-gateway | grep VPN`
+- [ ] Test internet in container: `sudo docker exec openclaw-gateway ping -c 3 8.8.8.8`
+- [ ] Try different country: Change SURFSHARK_COUNTRY in .env
+- [ ] Check Surfshark status: https://surfshark.com/server-status
+
+### Container Won't Start with VPN Enabled
+
+- [ ] Verify /dev/net/tun exists: `ls -la /dev/net/tun`
+- [ ] Check NET_ADMIN capability in docker-compose.yml
+- [ ] Ensure devices section includes /dev/net/tun
+- [ ] Review VPN logs: `sudo docker exec openclaw-gateway tail /var/log/openvpn.log`
+- [ ] Temporarily set VPN_REQUIRED=false to debug
+- [ ] Check OpenVPN is installed: `sudo docker exec openclaw-gateway which openvpn`
+
+### VPN Connected But No Internet
+
+- [ ] Check routing: `sudo docker exec openclaw-gateway ip route`
+- [ ] Test DNS: `sudo docker exec openclaw-gateway nslookup google.com`
+- [ ] Verify external IP: `sudo docker exec openclaw-gateway curl https://api.ipify.org`
+- [ ] Check VPN interface: `sudo docker exec openclaw-gateway ip link show tun0`
+- [ ] Restart container: `sudo docker-compose restart openclaw`
+
+For detailed VPN troubleshooting, see [VPN_GUIDE.md](VPN_GUIDE.md).
 
 ## Quick Diagnostics Script
 

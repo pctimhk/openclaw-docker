@@ -10,6 +10,7 @@ Run [OpenClaw](https://github.com/OpenClaw/OpenClaw), a personal AI assistant, o
 - ⚙️ Easy configuration through environment variables
 - 🏥 Built-in health checks
 - 📊 Resource limits for Synology NAS compatibility
+- 🔒 **NEW: Surfshark VPN support with pre-start connection**
 
 ## Prerequisites
 
@@ -94,6 +95,12 @@ Key environment variables you can configure:
 | `LOG_LEVEL` | Log level (debug/info/warn/error) | `info` |
 | `ANTHROPIC_API_KEY` | Anthropic API key | - |
 | `OPENAI_API_KEY` | OpenAI API key | - |
+| `VPN_ENABLED` | Enable Surfshark VPN | `false` |
+| `SURFSHARK_USER` | Surfshark service username | - |
+| `SURFSHARK_PASSWORD` | Surfshark service password | - |
+| `SURFSHARK_COUNTRY` | VPN country code (us, uk, etc.) | `us` |
+
+For detailed VPN setup instructions, see [VPN_GUIDE.md](VPN_GUIDE.md).
 
 ### Volume Mappings
 
@@ -175,6 +182,24 @@ sudo docker exec -it openclaw-gateway npm update -g openclaw@latest
 sudo docker-compose restart openclaw
 ```
 
+## VPN Support
+
+OpenClaw Docker now includes integrated Surfshark VPN support. Connect to VPN automatically before starting OpenClaw for enhanced privacy and security.
+
+**Quick VPN Setup:**
+
+1. Get your Surfshark service credentials from https://my.surfshark.com/vpn/manual-setup/main
+2. Edit `.env` file:
+   ```env
+   VPN_ENABLED=true
+   SURFSHARK_USER=your_service_username
+   SURFSHARK_PASSWORD=your_service_password
+   SURFSHARK_COUNTRY=us
+   ```
+3. Restart: `sudo docker-compose restart openclaw`
+
+For complete VPN setup instructions and troubleshooting, see **[VPN_GUIDE.md](VPN_GUIDE.md)**.
+
 ## Troubleshooting
 
 ### Container won't start
@@ -226,6 +251,7 @@ sudo docker-compose restart openclaw
 
 ## Additional Resources
 
+- [VPN Setup Guide](VPN_GUIDE.md) - Complete Surfshark VPN integration guide
 - [OpenClaw Official Documentation](https://docs.openclaw.ai)
 - [OpenClaw GitHub Repository](https://github.com/OpenClaw/OpenClaw)
 - [OpenClaw Discord Community](https://discord.gg/clawd)
